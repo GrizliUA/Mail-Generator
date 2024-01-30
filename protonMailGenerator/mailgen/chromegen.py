@@ -19,6 +19,24 @@ kernel32.GlobalUnlock.argtypes = [ctypes.c_void_p]
 user32 = ctypes.windll.user32
 user32.GetClipboardData.restype = ctypes.c_void_p
 
+def refresh_page() -> None:
+    """Refresh web-page"""
+    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('r'); pyautogui.keyUp('ctrlleft')
+
+def copy_page() -> None:
+    """copy all text from web-page"""
+    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('a'); pyautogui.keyUp('ctrlleft')
+    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('c'); pyautogui.keyUp('ctrlleft')
+
+def switch_page() -> None:
+    """Switch web-page"""
+    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
+
+def new_page() -> None:
+    """Create new web-page"""
+    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('t'); pyautogui.keyUp('ctrlleft')
+
+
 def getClip6digit():
     user32.OpenClipboard(0)
     try:
@@ -28,7 +46,7 @@ def getClip6digit():
             text = ctypes.c_char_p(data_locked)
             value = text.value
             kernel32.GlobalUnlock(data_locked)
-            return str(re.findall(r'(\d{6})', (str(value))))
+            return str(re.findall(r'(\d{6})', (str(value)))[0])
     finally:
         user32.CloseClipboard()
 
@@ -41,15 +59,16 @@ def getMail():
             text = ctypes.c_char_p(data_locked)
             value = text.value
             kernel32.GlobalUnlock(data_locked)
-            if "@dropmail.me" in str(value) or "@emltmp.com" in str(value) or "@spymail.one" in str(value) or "@10mail.org" in str(value):
-                match = re.search(r'[\w.+-]+@[\w-]+\.[\w.-]+', str(value))
-                return str(match.group(0))
+            email = re.search(r'[\w.+-]+@[\w-]+\.[\w.-]+', str(value)).group(0)
+            domains = ["@dropmail.me", "@emltmp.com", "@spymail.one", "@10mail.org"]
+            for domain in domains:
+                if email.endswith(domain):
+                    return str(email[1:])
             return False
     finally:
         user32.CloseClipboard()
 webbrowser.open('https://account.proton.me/signup?plan=free')
-time.sleep(5)
-
+time.sleep(10)
 
 
 def randomize(
@@ -95,7 +114,7 @@ def randomize(
 
 # Username
 _username_=randomize('-s',5)+randomize('-s',5)+randomize('-s',5)
-pyautogui.typewrite(_username_ + '\t\t')
+pyautogui.typewrite(_username_ + '\t\t\t')
 print("Username:" + _username_)
 
 # Password
@@ -103,86 +122,73 @@ _password_=randomize('-p',16)
 pyautogui.typewrite(_password_+'\t'+_password_+'\t')
 print("Password:" + _password_)
 
+
 pyautogui.typewrite('\n')
-time.sleep(5)
-pyautogui.typewrite('\t\t\t\n')
-
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('t'); pyautogui.keyUp('ctrlleft')
-
 time.sleep(10)
-pyautogui.typewrite('https://dropmail.me/\n')
+pyautogui.typewrite('\t\t\t\n')
+new_page()
 
-
-pyautogui.keyDown('shift');pyautogui.keyDown('down'); pyautogui.keyUp('down'); pyautogui.keyUp('shift')
+time.sleep(10)           
+pyautogui.typewrite('https://dropmail.me/en/\n')
 time.sleep(10)
 
 newMail = True
 while True:
     if not newMail:
-        pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('r'); pyautogui.keyUp('ctrlleft')
+        refresh_page()
         time.sleep(5)
-    pyautogui.typewrite('\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t')
-    pyautogui.keyDown('ctrlleft')
-    pyautogui.keyDown('shiftleft')
-    pyautogui.keyDown('shiftright')
-    pyautogui.press('down')
-    pyautogui.keyUp('shiftleft')
-    pyautogui.keyUp('shiftright')
-    pyautogui.keyUp('ctrlleft')
-    pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('c'); pyautogui.keyUp('ctrlleft')
+    copy_page()
     newMail = getMail()
     if newMail:
         print("10 min mail: " + newMail)
         break
 
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
-time.sleep(1)
-#äpyautogui.typewrite(newMail)
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('v'); pyautogui.keyUp('ctrlleft')
-pyautogui.press('backspace')
-pyautogui.typewrite('\n')
+switch_page()
+time.sleep(10)
+
+pyautogui.typewrite(newMail)
+pyautogui.press('enter')
+
 
 time.sleep(10)
 
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
-time.sleep(1)
+switch_page()
+time.sleep(10)
 
-#pyautogui.typewrite('\t\t\t\t\t\t\t\t\t\t\t\t\t\n')
-
-#time.sleep(5)
+copy_page()
 
 
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('a'); pyautogui.keyUp('ctrlleft')
-pyautogui.keyDown('ctrlleft'); pyautogui.typewrite('c'); pyautogui.keyUp('ctrlleft')
+switch_page()
 
+pyautogui.typewrite(getClip6digit() + '\n')
 
-pyautogui.keyDown('ctrlleft');  pyautogui.typewrite('\t'); pyautogui.keyUp('ctrlleft')
-time.sleep(5)
-pyautogui.typewrite(str(getClip6digit()) + '\n')
-
-
-time.sleep(5)
-pyautogui.typewrite('\n')
-time.sleep(5)
-pyautogui.typewrite('\t\t\t\t\n')
-time.sleep(1)
+time.sleep(25)
 pyautogui.typewrite('\t\n')
+time.sleep(10)
+pyautogui.typewrite('\t' * 2 + '\n')
+time.sleep(10)
+pyautogui.typewrite('\t' * 4 + '\n')
+time.sleep(10)
+pyautogui.typewrite('\n')
+time.sleep(10)
+pyautogui.typewrite('\n')
+
 
 print(_username_+"@proton.me:" + _password_)
 
-logfile = open("accLog.txt", "a")
-logfile.write(_username_ + "@proton.me:" + _password_ + "\n")
+logfile = open("protonMailGenerator/mailgen/accLog.txt", "w")
+logfile.write('mail:password\n' + _username_ + "@proton.me:" + _password_ + "\n")
 logfile.close()
 
 
 
-# CHAPTCHA
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
-#pyautogui.typewrite('\t')
+# # CHAPTCHA
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
+# #pyautogui.typewrite('\t')
 
-#pyautogui.typewrite('\n')
+# #pyautogui.typewrite('\n')
